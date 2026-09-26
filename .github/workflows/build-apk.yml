@@ -1,0 +1,57 @@
+name: Build ScreenVoice APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Check test credentials
+        env:
+          SPEECHIFY_API_KEY: ${{ secrets.SPEECHIFY_API_KEY }}
+          SUBDL_API_KEY: ${{ secrets.SUBDL_API_KEY }}
+        run: |
+          if [ -n "$SPEECHIFY_API_KEY" ]; then
+            echo "SPEECHIFY_API_KEY is configured."
+          else
+            echo "::warning::SPEECHIFY_API_KEY is not configured."
+          fi
+
+          if [ -n "$SUBDL_API_KEY" ]; then
+            echo "SUBDL_API_KEY is configured."
+          else
+            echo "::warning::SUBDL_API_KEY is not configured."
+          fi
+
+      - name: Build debug APK
+        env:
+          SPEECHIFY_API_KEY: ${{ secrets.SPEECHIFY_API_KEY }}
+          SUBDL_API_KEY: ${{ secrets.SUBDL_API_KEY }}
+        run: gradle assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScreenVoice-Commercial-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
