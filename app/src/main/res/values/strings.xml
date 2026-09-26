@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScreenVoice</string>
+    <string name="product_description">Real-time subtitle-to-voice reader.</string>
+    <string name="subtitle_modes">Subtitle source</string>
+    <string name="testing_note">Commercial test build. API credentials are injected at build time and will move behind the production backend before release.</string>
+</resources>
